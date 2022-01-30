@@ -9,6 +9,9 @@ import Vant from 'vant'
 // 加载 Vant 全局样式
 import 'vant/lib/index.css'
 
+// 动态加载 设置 rem 基准值
+import 'amfe-flexible'
+
 // 加载全局样式文件
 import './styles/index.less'
 

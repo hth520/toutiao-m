@@ -1,6 +1,6 @@
 <template>
  <div class="home-container">
- <van-nav-bar class="page-nav-bar">
+ <van-nav-bar class="page-nav-bar" fixed>
      <van-button class="search-btn" slot="title" size="small" round icon="search">
          搜索
      </van-button>
@@ -13,45 +13,79 @@
       <article-list :channel="item"></article-list>
   </van-tab>
   <div slot="nav-right" class="placeholder"></div>
-  <div slot="nav-right" class="hamburger-btn">
+  <div slot="nav-right" class="hamburger-btn" @click="isChennelEditShow=true">
       <i class="toutiao toutiao-gengduo"></i>
   </div>
 </van-tabs>
+
+<!-- 频道编辑弹出层 -->
+<van-popup
+  v-model="isChennelEditShow"
+  closeable
+  close-icon-position="top-left"
+  position="top"
+  :style="{ height: '100%' }"
+>
+<!-- 频道编辑组件 -->
+<channel-edit :my-channels="channels" :active="active" @update-active="onUpdateActive"></channel-edit>
+</van-popup>
  </div>
 </template>
 <script>
 import { getUserChannels } from '@/api/user'
-import articleList from './components/article-list.vue'
+import ArticleList from './components/article-list.vue'
+import ChannelEdit from './components/channel-edit.vue'
+import { mapState } from 'vuex'
+import { getItem } from '@/utils/storage'
 export default {
   name: 'HomeIndex',
   components: {
-    articleList
+    ArticleList,
+    ChannelEdit
   },
   data () {
     return {
       active: 0,
-      channels: [] // 频道列表
+      channels: [], // 频道列表
+      isChennelEditShow: false // 控制编辑频道的弹出层
     }
   },
   created () {
     this.loadChannels()
   },
   computed: {
+    ...mapState(['user'])
   },
   methods: {
     async loadChannels () {
       try {
-        const { data } = await getUserChannels()
-        this.channels = data.data.channels
+        // let channels = []
+        if (this.user) {
+          const { data } = await getUserChannels()
+          this.channels = data.data.channels
+        } else {
+          const localChannels = getItem('TOUTIAO_CHANNELS')
+          if (localChannels) {
+            this.channels = localChannels
+          } else {
+            const { data } = await getUserChannels()
+            this.channels = data.data.channels
+          }
+        }
       } catch (err) {
         this.$toast('获取频道数据失败')
       }
+    },
+    onUpdateActive (index, isChennelEditShow = true) {
+      this.active = index
+      this.isChennelEditShow = isChennelEditShow
     }
   }
 }
 </script>
 <style lang='less'  scoped>
     .home-container{
+        padding-top: 174px;
         padding-bottom: 100px;
         ::v-deep.van-nav-bar__title{
             max-width: unset;
@@ -69,6 +103,11 @@ export default {
         }
          ::v-deep.channel-tabs{
              .van-tabs__wrap{
+                 position: fixed;
+                 top:92px;
+                 z-index: 1;
+                 left: 0;
+                 right: 0;
                  height: 82px;
              }
            .van-tab{

@@ -9,7 +9,8 @@
             error-text="请求失败，点击重新加载"
             @load="onLoad"
         >
-            <van-cell v-for="(article,index) in list" :key="index" :title="article.title" />
+        <article-item v-for="(article,index) in list" :key="index" :article="article"></article-item>
+            <!-- <van-cell v-for="(article,index) in list" :key="index" :title="article.title" /> -->
         </van-list>
 </van-pull-refresh>
 
@@ -17,6 +18,7 @@
 </template>
 <script>
 import { getArticles } from '@/api/article'
+import ArticleItem from '@/components/article-item'
 export default {
   props: {
     channel: {
@@ -24,7 +26,10 @@ export default {
       required: true
     }
   },
-  name: '',
+  components: {
+    ArticleItem
+  },
+  name: 'ArticleList',
   data () {
     return {
       list: [], // 存储列表数据的数据
@@ -89,5 +94,10 @@ export default {
 }
 </script>
 <style lang='less'  scoped>
-
+    .article-list {
+        // 百分比单位是相对于父元素的
+        // height: 100%;
+        height: 79vh;
+        overflow-y: auto;
+    }
 </style>

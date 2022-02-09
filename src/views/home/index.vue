@@ -1,7 +1,7 @@
 <template>
  <div class="home-container">
  <van-nav-bar class="page-nav-bar" fixed>
-     <van-button class="search-btn" slot="title" size="small" round icon="search">
+     <van-button class="search-btn" slot="title" size="small" round icon="search" to="/search">
          搜索
      </van-button>
  </van-nav-bar>
